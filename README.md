@@ -68,99 +68,13 @@
 
 ---
 
-## 5. 데이터베이스 구조(확장 설계)
+## 5. 데이터베이스 구조
 
-```mermaid
-erDiagram
-    PLATFORM ||--o{ NOVEL : PROVIDES
-    NOVEL ||--o{ RANKING : INCLUDES
-    NOVEL ||--o{ GENRE : HAS
-    NOVEL ||--o{ REVIEW : HAS
-    NOVEL ||--o{ BOOKMARK : HAS
-    NOVEL ||--o{ SUBSCRIPTION : HAS
-    USER ||--o{ BOOKMARK : HAS
-    USER ||--o{ REVIEW : HAS
-    USER ||--o{ SUBSCRIPTION : HAS
-    NOVEL ||--o{ REPORT : HAS
-    NOVEL ||--o{ OFFER : HAS
-    PLATFORM ||--o{ OFFER : HAS
-    USER ||--o{ OFFER : HAS
-    %% OFFER는 작가가 제안받은 오퍼를 의미
-    OFFER {
-      string id PK
-      string novel_id FK
-      string platform_id FK
-      string user_id FK
-      string offer_detail
-      string status
-      datetime created_at
-    }
-    NOVEL {
-      string id PK
-      string title
-      string author
-      string summary
-      string cover_url
-      string platform_id FK
-      string detail_url
-      string status
-      string origin
-      string user_id FK
-      datetime updated_at
-    }
-    PLATFORM {
-      string id PK
-      string name
-      string base_url
-      string logo_url
-    }
-    RANKING {
-      string id PK
-      string novel_id FK
-      string platform_id FK
-      int rank
-      string type
-      datetime collected_at
-    }
-    GENRE {
-      string id PK
-      string name
-    }
-    USER {
-      string id PK
-      string email
-      string nickname
-      string password_hash
-      datetime created_at
-    }
-    BOOKMARK {
-      string id PK
-      string user_id FK
-      string novel_id FK
-      datetime created_at
-    }
-    REVIEW {
-      string id PK
-      string user_id FK
-      string novel_id FK
-      int rating
-      string content
-      datetime created_at
-    }
-    SUBSCRIPTION {
-      string id PK
-      string user_id FK
-      string novel_id FK
-      datetime created_at
-    }
-    REPORT {
-      string id PK
-      string user_id FK
-      string novel_id FK
-      string reason
-      datetime created_at
-    }
-```
+상세한 최신 데이터베이스 스키마는 별도의 '데이터베이스 스키마' 문서를 참조해주십시오. 해당 문서에는 다음과 같은 최신 구조가 포함되어 있습니다:
+- 작가 정보 분리 (authors 테이블)
+- 플랫폼별 작품 연재 정보 (platform_listings 테이블)
+- 자체 연재 작품 관리 (free_novels 테이블)
+- 기타 확장된 테이블 구조 및 관계
 
 ---
 
@@ -214,12 +128,12 @@ erDiagram
 ## 9. 전문가 관점 진단 및 개선 포인트
 
 - **README.md 구조**: 실무/협업/확장성 관점에서 충분히 체계적이나, 아래 항목 추가 시 완성도 향상
-  - [ ] **API 명세(샘플)**: REST/GraphQL 엔드포인트, 파라미터, 응답 예시 등
-  - [ ] **UI/UX 샘플**: 주요 화면(순위/상세/연재/오퍼 등) 와이어프레임, 사용자 플로우
-  - [ ] **운영/관리자 도구**: 데이터 정정, 장애 모니터링, 오퍼/계약 관리 등 실제 운영 시나리오
-  - [ ] **테스트/배포 전략**: E2E 테스트, CI/CD, 롤백/모니터링 등 실무 적용 방안
-  - [ ] **보안/개인정보**: JWT/OAuth, 데이터 암호화, 접근제어, 로그 관리 등
-  - [ ] **문서화/코드 품질**: OpenAPI, ERD, 코드 컨벤션, 주석/README 일관성
+  - [x] **API 명세(샘플)**: REST/GraphQL 엔드포인트, 파라미터, 응답 예시 등 (별도 'API 명세서' 문서로 상세화 완료)
+  - [x] **UI/UX 샘플**: 주요 화면(순위/상세/연재/오퍼 등) 와이어프레임, 사용자 플로우 (별도 '와이어프레임 상세 지침서'로 완성)
+  - [x] **운영/관리자 도구**: 데이터 정정, 장애 모니터링, 오퍼/계약 관리 등 실제 운영 시나리오 (별도 '시스템 아키텍처 다이어그램'에 포함)
+  - [x] **테스트/배포 전략**: E2E 테스트, CI/CD, 롤백/모니터링 등 실무 적용 방안 (별도 '프로젝트 계획서'에 상세화)
+  - [x] **보안/개인정보**: JWT/OAuth, 데이터 암호화, 접근제어, 로그 관리 등 (별도 '시스템 아키텍처 다이어그램'에 포함)
+  - [x] **문서화/코드 품질**: OpenAPI, ERD, 코드 컨벤션, 주석/README 일관성 (각 상세 문서에서 체계적으로 관리)
 
 ---
 
@@ -354,5 +268,102 @@ erDiagram
 
 - 수익델은 시장 반응/제휴 성과에 따라 유연하게 조정
 - 법적/세무적 이슈(계약, 세금, 정산 등) 사전 검토 필수
+
+---
+
+## 15. 법적 안전장치 및 제휴 전략
+
+### 1) 플랫폼 제휴 전략
+- **공식 API 협의**: 각 플랫폼과 공식 API 사용 협의 추진
+- **트래픽 기여**: 딥링크를 통한 트래픽 제공으로 상생 구조 구축
+- **데이터 수집 범위**: 최소 필수 정보만 수집 (작품명, 작가명, 순위, 딥링크)
+- **이용약관 준수**: 각 플랫폼의 robots.txt, 이용약관 철저히 준수
+
+### 2) 법적 검토 및 대응
+- **법률 자문단**: 저작권/정보통신법 전문 변호사 섭외
+- **이용약관**: 서비스 이용약관, 개인정보처리방침 철저히 수립
+- **저작권 정책**: 표지/줄거리 등 저작권 침해 소지 있는 정보 제한
+- **분쟁 해결**: 분쟁 조정 프로세스 및 법적 대응 매뉴얼 수립
+
+### 3) 데이터 보안
+- **암호화**: 개인정보/중요 데이터 암호화 저장
+- **접근제어**: 역할별 접근 권한 체계화
+- **감사**: 데이터 접근/수정 이력 관리
+- **백업**: 정기적 데이터 백업 및 복구 체계
+
+## 16. 초기 사용자 유치 전략
+
+### 1) 작가 유치 전략
+- **무료 연재 혜택**: 초기 작가 특별 혜택 (노출, 홍보, 통계 등)
+- **작가 지원 프로그램**: 신인 작가 발굴/육성 프로그램 운영
+- **커뮤니티**: 작가 간 네트워킹/멘토링 시스템 구축
+- **수익화 지원**: 다양한 수익화 채널 연계 지원
+
+### 2) 독자 유치 전략
+- **초기 혜택**: 가입 시 프리미엄 기능 무료 체험
+- **추천 시스템**: AI 기반 맞춤형 작품 추천
+- **커뮤니티**: 독자 리뷰/평점, 토론방 운영
+- **이벤트**: 정기적인 이벤트/프로모션 진행
+
+### 3) 마케팅 전략
+- **SNS 마케팅**: 인스타그램, 트위터 등 SNS 채널 활용
+- **인플루언서**: 작가/독자 인플루언서 협업
+- **콘텐츠 마케팅**: 블로그, 유튜브 등 콘텐츠 채널 구축
+- **검색 최적화**: SEO/SEM 전략 수립
+
+## 17. 통합 운영 및 차별화 전략
+
+### 1) AI 기반 서비스
+- **개인화 추천**:
+  - 사용자 취향 분석 기반 작품 추천
+  - 장르/플랫폼별 인기 트렌드 예측
+  - 작품 분석/피드백 AI 도구
+  - 유해 콘텐츠 AI 필터링
+
+### 2) 커뮤니티 특화
+- **팬아트/팬픽션**:
+  - 작품 기반 창작물 공유
+  - 정기적인 작가 인터뷰/라이브
+  - 작품별 토론방/독서모임
+  - 온/오프라인 이벤트
+
+### 3) 작가 지원 프로그램
+- **포트폴리오/마케팅**:
+  - 전문 프로필, 작품 포트폴리오
+  - SNS 홍보, 커뮤니티 노출
+  - 독자 이벤트, 피드백 시스템
+
+- **데뷔/계약 지원**:
+  - 우수작품 담당자 추천
+  - 플랫폼 오픈콜 연계
+  - 계약 상담, 법률 자문
+  - 수익화 전략 수립
+
+- **성장 지원**:
+  - 워크샵, 멘토링, 피드백
+  - 작가 네트워킹
+  - 협업 기회 제공
+
+### 4) 작가 지원 프로그램 단계별 실행 계획
+
+- **1단계 (1-3개월)**:
+  - 핵심 작가 그룹(10-20명) 대상 심층 인터뷰
+  - 기본 가이드라인 및 체크리스트
+  - 기본 수익 모델 가이드라인
+  - 성공 사례 분석 리포트
+
+- **2단계 (4-6개월)**:
+  - 자동화된 월간 설문 시스템
+  - 웨비나 교육 프로그램
+  - 플랫폼별 수익 구조 분석
+  - 마케팅 전략 가이드
+
+- **3단계 (7-12개월)**:
+  - AI 기반 피드백 분석
+  - 제휴 전문가 상담 연결
+  - AI 기반 최적 모델 추천
+  - 맞춤형 마케팅 전략
+
+> 참고: 서비스 핵심 기능의 MVP 단계별 계획은 별도의 '프로젝트 계획서' 문서를 참조하십시오.
 
 ---
