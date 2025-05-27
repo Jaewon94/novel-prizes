@@ -1,0 +1,34 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# novel-prizes-backend-rules
+
+## 백엔드 개발 기본 규칙
+
+백엔드 개발 및 설계, 구현, 리뷰, 테스트, 문서화 등 모든 백엔드 관련 작업을 진행할 때는 반드시 아래의 문서들을 우선적으로 확인하고, 그 내용과 일치하도록 작업해야 한다.
+
+### 1. 백엔드 가이드
+- 파일: `novel-prizes-backend/backend-guide.md`
+- 개발 환경, 프레임워크/라이브러리 버전, 개발 진행 순서, GitHub 커밋 가이드, 환경 설정, Docker 및 배포 환경 등 참고
+
+### 2. 시스템 아키텍처 다이어그램
+- 파일: `02. design/02. System Architecture/2-2-1 System Architecture Diagram.md`
+- 전체 시스템 구조, 서비스 간 역할, 데이터 흐름, 기술 스택, 확장성/보안 전략 등 참고
+
+### 3. API 명세서
+- 파일: `02. design/02. System Architecture/2-2-2 API Specification.md`
+- REST/GraphQL API 엔드포인트, 요청/응답 형식, 인증/에러 처리 등 참고
+
+### 4. 데이터베이스 스키마
+- 파일: `02. design/02. System Architecture/2-2-3 Database Schema.md`
+- 테이블 구조, 컬럼, 인덱스, 제약조건, 관계(ERD) 등 참고
+
+---
+
+> 위 문서들의 내용과 실제 코드/설계/문서가 불일치할 경우, 반드시 문서와 코드를 동기화하거나, 변경 사유를 명확히 기록해야 한다.
+
+---
+
+이 규칙은 novel-prizes 프로젝트의 모든 백엔드 작업에 필수적으로 적용한다.
