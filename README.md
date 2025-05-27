@@ -211,7 +211,7 @@ erDiagram
     PLATFORM ||--o{ PLATFORM_LISTING : PROVIDES
     PLATFORM_LISTING ||--o{ RANKING : INCLUDES
     PLATFORM_LISTING ||--o{ OFFER : HAS
-    // ... 기타 엔티티 연결 ...
+    ...
 ```
 
 ---
