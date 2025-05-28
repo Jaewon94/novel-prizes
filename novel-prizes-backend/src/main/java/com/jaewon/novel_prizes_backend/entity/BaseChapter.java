@@ -7,11 +7,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.MappedSuperclass;
-import lombok.AccessLevel; // 추가
-import lombok.Builder; // SuperBuilder.Default 사용을 위해 유지
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor; // 추가
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor; // 추가
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
@@ -20,11 +21,11 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA를 위해 추가
-// @AllArgsConstructor(access = AccessLevel.PROTECTED) // 필요시 추가
+@AllArgsConstructor(access = AccessLevel.PROTECTED) // SuperBuilder와 함께 사용 시 추가
 @EqualsAndHashCode(of = "id")
 public abstract class BaseChapter {
     @Id
-    protected String id;
+    protected String id; // 자식 클래스에서 @EqualsAndHashCode(of="id") 사용 시 protected 필요
 
     @Column(nullable = false)
     private String title;
@@ -34,7 +35,7 @@ public abstract class BaseChapter {
     private String content;
 
     @Column(nullable = false)
-    @Builder.Default // SuperBuilder 사용시 @SuperBuilder.Default로 변경하거나, Builder.Default도 호환됨
+    @Builder.Default
     private Integer chapterNumber = 1;
 
     private Integer viewCount;

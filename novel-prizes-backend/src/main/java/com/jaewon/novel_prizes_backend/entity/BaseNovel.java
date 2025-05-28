@@ -10,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor; // 추가
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,11 +22,11 @@ import lombok.experimental.SuperBuilder; // 추가
 @Setter
 @SuperBuilder // 추가
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA를 위해 추가
-// @AllArgsConstructor(access = AccessLevel.PROTECTED) // 필요시 추가
+@AllArgsConstructor(access = AccessLevel.PROTECTED) // SuperBuilder와 함께 사용 시 추가
 @EqualsAndHashCode(of = "id")
 public abstract class BaseNovel {
     @Id
-    protected String id;
+    protected String id; // 자식 클래스에서 @EqualsAndHashCode(of="id") 사용 시 protected 필요
 
     @Column(nullable = false)
     private String title;
