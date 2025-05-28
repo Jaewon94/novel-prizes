@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    active: dev # 기본값(dev), 운영 배포 시 prod로 변경 또는 --spring.profiles.active=prod 옵션 사용
+
+# 공통 설정 예시 (필요에 따라 추가)
+server:
+  port: 8080
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        type: trace
