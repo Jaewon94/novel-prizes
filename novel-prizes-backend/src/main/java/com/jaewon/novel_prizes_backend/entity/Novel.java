@@ -14,13 +14,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder; // Builder -> SuperBuilder
+import lombok.Builder;
 
 @Entity
 @Table(name = "novels")
 @Getter
 @Setter
-@SuperBuilder // 변경
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true) // 부모 클래스의 id 기준 equals/hashCode 사용

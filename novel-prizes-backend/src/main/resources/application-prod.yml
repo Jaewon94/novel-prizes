@@ -1,20 +1,109 @@
-spring:
-  datasource:
-    url: jdbc:mysql://prod-db:3306/novel_prod
-    username: produser
-    password: prodpass
-    driver-class-name: com.mysql.cj.jdbc.Driver
+# 운영 환경 설정 (application-prod.yml)
+# AWS ECS, Docker 등 운영 서버에서 사용하는 설정
+# 보안상 민감한 정보는 환경변수를 통해 주입
 
+spring:
+  # 데이터베이스 설정 (AWS RDS MySQL)
+  datasource:
+    # 환경변수로 주입 권장: ${DB_URL:jdbc:mysql://prod-db:3306/novel_prizes_prod}
+    url: jdbc:mysql://prod-db:3306/novel_prizes_prod?useSSL=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME:produser}
+    password: ${DB_PASSWORD:prodpass}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # HikariCP 운영환경 최적화
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+      pool-name: NovelPrizesHikariCP-Prod
+
+  # JPA 및 Hibernate 설정 (운영환경 최적화)
   jpa:
     hibernate:
-      ddl-auto: validate # 운영 환경에서는 validate 권장
-    show-sql: false
+      ddl-auto: validate # 운영에서는 절대 create/update 사용 금지
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: false # 운영에서는 SQL 로깅 비활성화
     properties:
       hibernate:
         format_sql: false
+        use_sql_comments: false
+        jdbc:
+          batch_size: 50 # 운영환경에서는 더 큰 배치 사이즈
+    open-in-view: false
 
+  # Redis 설정 (AWS ElastiCache)
   data:
     redis:
-      host: prod-redis
-      port: 6379
-      # password: your_redis_password # 필요 시 주석 해제
+      host: ${REDIS_HOST:prod-redis}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 16
+          max-idle: 8
+          min-idle: 4
+          max-wait: 3000ms
+
+# JWT 운영환경 설정
+jwt:
+  # 환경변수로 주입 필수 (보안 강화)
+  secret: ${JWT_SECRET:}
+  access-token-expiration: ${JWT_ACCESS_EXPIRATION:3600000} # 1시간
+  refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:2592000000} # 30일
+
+# 로깅 설정 (운영환경)
+logging:
+  level:
+    root: INFO
+    com.jaewon.novel_prizes_backend: INFO
+    org.springframework.security: WARN
+    org.hibernate: WARN
+  file:
+    name: /var/log/novel-prizes/application.log
+  logback:
+    rollingpolicy:
+      max-file-size: 500MB
+      max-history: 90
+      total-size-cap: 10GB
+
+# 운영환경 보안 설정
+server:
+  # HTTPS 강제 (리버스 프록시에서 처리 시 주석 처리)
+  # ssl:
+  #   enabled: true
+  #   key-store: classpath:keystore.p12
+  #   key-store-password: ${SSL_KEYSTORE_PASSWORD}
+  #   key-store-type: PKCS12
+  error:
+    include-stacktrace: never # 운영에서는 스택트레이스 숨김
+    include-message: never
+  shutdown: graceful # 우아한 종료
+
+# Spring Boot Actuator (운영 모니터링)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# 환경변수 참조 가이드
+# 필수 환경변수 목록:
+# - DB_URL: 데이터베이스 연결 URL
+# - DB_USERNAME: 데이터베이스 사용자명
+# - DB_PASSWORD: 데이터베이스 비밀번호
+# - REDIS_HOST: Redis 호스트
+# - REDIS_PASSWORD: Redis 비밀번호 (선택)
+# - JWT_SECRET: JWT 서명용 비밀키 (Base64 인코딩된 512비트 이상)

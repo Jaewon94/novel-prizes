@@ -1,20 +1,79 @@
+# 개발 환경 설정 (application-dev.yml)
+# 로컬 개발 서버에서 사용하는 설정
+
 spring:
+  # 데이터베이스 설정 (MySQL)
   datasource:
-    url: jdbc:mysql://localhost:3306/novel_dev
+    url: jdbc:mysql://localhost:3306/novel_prizes_dev?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: devuser
     password: devpass
     driver-class-name: com.mysql.cj.jdbc.Driver
+    # HikariCP 커넥션 풀 설정 (개발환경 최적화)
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-test-query: SELECT 1
+      pool-name: NovelPrizesHikariCP
 
+  # JPA 및 Hibernate 설정
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: update # 개발환경에서는 자동 스키마 업데이트
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+    open-in-view: false # OSIV 비활성화 (성능 최적화)
 
+  # Redis 설정 (캐싱 및 세션 저장소)
   data:
     redis:
       host: localhost
       port: 6379
-    # password: your_redis_password # 필요 시 주석 해제
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+  # DevTools 설정 (개발 편의성)
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+# JWT 개발환경 설정 오버라이드
+jwt:
+  # 개발환경에서는 더 자세한 로깅을 위해 짧은 만료 시간 사용 (선택사항)
+  access-token-expiration: 3600000 # 1시간 (개발편의성을 위해 유지)
+  refresh-token-expiration: 604800000 # 7일 (개발환경에서는 더 짧게)
+
+# 로깅 설정 (개발환경)
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.security.web: DEBUG
+    com.zaxxer.hikari: DEBUG
+  file:
+    name: logs/novel-prizes-dev.log
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 30
+
+# 개발환경 전용 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,loggers
+  endpoint:
+    health:
+      show-details: always

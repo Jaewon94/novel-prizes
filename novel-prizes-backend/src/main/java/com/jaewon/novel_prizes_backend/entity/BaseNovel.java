@@ -15,14 +15,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder; // 추가
+// SuperBuilder import 제거 - 안정성을 위해 일반 Builder 사용
 
 @MappedSuperclass
 @Getter
 @Setter
-@SuperBuilder // 추가
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA를 위해 추가
-@AllArgsConstructor(access = AccessLevel.PROTECTED) // SuperBuilder와 함께 사용 시 추가
+@AllArgsConstructor(access = AccessLevel.PROTECTED) // 생성자 체인을 위해 추가
 @EqualsAndHashCode(of = "id")
 public abstract class BaseNovel {
     @Id

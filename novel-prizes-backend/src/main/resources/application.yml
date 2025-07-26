@@ -2,13 +2,39 @@ spring:
   profiles:
     active: dev # 기본값(dev), 운영 배포 시 prod로 변경 또는 --spring.profiles.active=prod 옵션 사용
 
-# 공통 설정 예시 (필요에 따라 추가)
+# 공통 설정
 server:
   port: 8080
 
+# JWT 토큰 설정 (공통)
+jwt:
+  # Base64로 인코딩된 512비트 비밀키 (운영환경에서는 환경변수 사용 필수)
+  # 개발용 키 - 실제 운영에서는 안전한 랜덤 키 사용
+  secret: dGhpc2lzYXNhbXBsZWp3dHNlY3JldGtleWZvcmRldmVsb3BtZW50ZW52aXJvbm1lbnRvbmx5cGxlYXNldXNlYXNlY3VyZXJhbmRvbWtleWlucHJvZHVjdGlvbmVudmlyb25tZW50
+  # Access Token 만료 시간 (밀리초) - 1시간
+  access-token-expiration: 3600000
+  # Refresh Token 만료 시간 (밀리초) - 30일
+  refresh-token-expiration: 2592000000
+
+# Swagger/OpenAPI 설정 (공통)
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  use-management-port: false
+  show-actuator: true
+
+# 로깅 설정 (공통)
 logging:
   level:
-    org:
-      hibernate:
-        SQL: debug
-        type: trace
+    root: INFO
+    com.jaewon.novel_prizes_backend: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
