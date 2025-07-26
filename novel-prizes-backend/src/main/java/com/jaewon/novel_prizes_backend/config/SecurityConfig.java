@@ -159,7 +159,7 @@ public class SecurityConfig {
             // 요청별 인가 설정
             .authorizeHttpRequests(authz -> authz
                 // 인증 관련 엔드포인트는 모든 사용자 접근 허용
-                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
                 
                 // 공개 API 엔드포인트 (소설 랭킹, 검색 등)
                 .requestMatchers("/api/public/**").permitAll()
@@ -167,6 +167,7 @@ public class SecurityConfig {
                 // 개발 도구 접근 허용
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll() // H2 콘솔 (개발용)
+                .requestMatchers("/actuator/**").permitAll() // Actuator 엔드포인트 (모니터링)
                 
                 // 관리자 전용 API
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")

@@ -1,0 +1,75 @@
+# 테스트 환경 설정 (application-test.yml)
+# H2 인메모리 데이터베이스를 사용하여 외부 의존성 없이 테스트 가능
+
+spring:
+  # H2 인메모리 데이터베이스 설정
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+    # H2 웹 콘솔 활성화 (개발/테스트 시 데이터베이스 확인용)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: false
+
+  # JPA 및 Hibernate 설정 (테스트 환경)
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # 테스트 시 스키마 자동 생성/삭제
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true # 테스트 환경에서는 SQL 로깅 활성화
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.H2Dialect
+    open-in-view: false
+
+  # Redis 설정 비활성화 (테스트 환경에서는 사용하지 않음)
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+# JWT 테스트 환경 설정
+jwt:
+  # 테스트용 JWT 비밀키 (개발/테스트 전용) - 512비트 이상 보장
+  secret: dGhpc2lzYXZlcnlsb25nc2VjcmV0a2V5Zm9ySldUdG9rZW5zaWduaW5ndXNlZGluZGV2ZWxvcG1lbnRhbmR0ZXN0aW5nZW52aXJvbm1lbnRvbmx5cGxlYXNlZG9ub3R1c2VpbnByb2R1Y3Rpb24=
+  access-token-expiration: 3600000 # 1시간
+  refresh-token-expiration: 2592000000 # 30일
+
+# 로깅 설정 (테스트 환경)
+logging:
+  level:
+    root: INFO
+    com.jaewon.novel_prizes_backend: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate: DEBUG
+    org.springframework.web: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# 서버 설정 (테스트 환경)
+server:
+  port: 8080
+  error:
+    include-stacktrace: always # 테스트에서는 스택트레이스 표시
+    include-message: always
+
+# Spring Boot Actuator (테스트/개발 모니터링)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # 테스트 환경에서는 모든 엔드포인트 노출
+  endpoint:
+    health:
+      show-details: always
+
+# Flyway 비활성화 (H2에서는 스키마를 JPA가 자동 생성)
+spring.flyway.enabled: false

@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "category_mappings", uniqueConstraints = @UniqueConstraint(columnNames = {"platform", "platform_category"}))
+@Table(name = "category_mappings", uniqueConstraints = @UniqueConstraint(columnNames = {"platform", "platformCategory"}))
 @Getter
 @Setter
 @NoArgsConstructor

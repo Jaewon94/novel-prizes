@@ -152,9 +152,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * 필터를 적용하지 않을 요청 경로 설정
      * 
      * 제외 대상:
-     * - 인증 관련 API (/auth/*)
+     * - 인증 관련 API (/api/auth/*)
      * - 공개 API (/api/public/*)
-     * - 개발 도구 (Swagger, H2 Console 등)
+     * - 개발 도구 (Swagger, H2 Console, Actuator 등)
      * - 정적 리소스
      * 
      * 성능 최적화:
@@ -169,11 +169,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         
         // 인증이 필요하지 않은 경로들
-        return path.startsWith("/auth/") ||
+        return path.startsWith("/api/auth/") ||
                path.startsWith("/api/public/") ||
                path.startsWith("/swagger-ui/") ||
                path.startsWith("/v3/api-docs/") ||
                path.startsWith("/h2-console/") ||
+               path.startsWith("/actuator/") ||
                path.startsWith("/favicon.ico") ||
                path.startsWith("/error");
     }

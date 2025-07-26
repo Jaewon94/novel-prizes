@@ -55,6 +55,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
+    
+    // H2 인메모리 데이터베이스 (테스트 및 개발용)
+    runtimeOnly 'com.h2database:h2'
 
     // API 문서화
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0' // 최신 버전 확인 (2.5.0 등)

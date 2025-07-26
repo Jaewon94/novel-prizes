@@ -28,10 +28,10 @@ import lombok.extern.slf4j.Slf4j;
  * 사용자 인증 관련 REST API 컨트롤러
  * 
  * 제공 기능:
- * - 회원가입 (POST /auth/signup)
- * - 로그인 (POST /auth/login)
- * - 토큰 갱신 (POST /auth/refresh)
- * - 로그아웃 (POST /auth/logout) - 향후 구현
+ * - 회원가입 (POST /api/auth/signup)
+ * - 로그인 (POST /api/auth/login)
+ * - 토큰 갱신 (POST /api/auth/refresh)
+ * - 로그아웃 (POST /api/auth/logout) - 향후 구현
  * 
  * API 설계 원칙:
  * - RESTful 설계 준수
@@ -54,7 +54,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "인증 API", description = "사용자 인증 관련 API (회원가입, 로그인, 토큰 갱신)")
