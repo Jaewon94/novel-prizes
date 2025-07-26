@@ -126,8 +126,8 @@ chore: 코드 수정
 
 ### 기술 스택
 - **백엔드**: Java 17, Spring Boot 3.3.x, Spring Data JPA, Spring Security
-- **데이터베이스**: MySQL 8.x (Flyway 마이그레이션), Redis (캐싱)
-- **인증**: JWT 토큰
+- **데이터베이스**: MySQL 8.x (Flyway 마이그레이션), Redis (캐싱), H2 (테스트용)
+- **인증**: JWT 토큰 (HS512, Access/Refresh Token)
 - **API 문서화**: SpringDoc OpenAPI (Swagger)
 - **빌드 도구**: Gradle (Groovy DSL)
 - **아키텍처**: QueryDSL (타입 안전 쿼리), JSON 컨버터 (복합 데이터 타입)
@@ -171,8 +171,9 @@ java -jar build/libs/novel-prizes-backend.jar --spring.profiles.active=dev
 
 ### 환경 관리
 - **개발 환경**: `--spring.profiles.active=dev` (기본값)
+- **테스트 환경**: `--spring.profiles.active=test` (H2 인메모리 DB)
 - **운영 환경**: `--spring.profiles.active=prod`
-- 설정 파일: `application.yml`, `application-dev.yml`, `application-prod.yml`
+- 설정 파일: `application.yml`, `application-dev.yml`, `application-test.yml`, `application-prod.yml`
 
 ### 데이터베이스 작업
 - Flyway 마이그레이션 파일: `src/main/resources/db/migration/`
@@ -229,13 +230,68 @@ docker build -t novel-prizes-backend .
 docker run -p 8080:8080 novel-prizes-backend
 
 # Docker Compose 사용 (MySQL, Redis 포함)
-docker-compose up -d
-docker-compose down
+docker compose up -d
+docker compose down
+```
+
+## JWT 인증 시스템
+
+### 인증 구조
+- **Spring Security 6.3.x**: 현대적인 보안 프레임워크
+- **JWT 토큰**: HS512 알고리즘 (512비트 비밀키)
+- **Stateless 인증**: 세션 없는 토큰 기반 인증
+- **이중 토큰 시스템**: Access Token (1시간) + Refresh Token (30일)
+
+### 구현된 API 엔드포인트
+
+#### 회원가입 (POST /api/auth/signup)
+```json
+{
+  "email": "user@example.com",
+  "password": "Password123$",
+  "passwordConfirm": "Password123$",
+  "nickname": "username",
+  "userType": "READER",
+  "termsAgreed": true
+}
+```
+
+#### 로그인 (POST /api/auth/login)
+```json
+{
+  "email": "user@example.com",
+  "password": "Password123$"
+}
+```
+
+#### 토큰 갱신 (POST /api/auth/refresh)
+```json
+{
+  "refreshToken": "eyJhbGciOiJIUzUxMiJ9..."
+}
+```
+
+### 보안 기능
+- **BCrypt 비밀번호 해싱**: 강도 12 설정
+- **이메일/닉네임 중복 검사**: 데이터 무결성 보장
+- **입력 검증**: Bean Validation으로 데이터 검증
+- **CORS 설정**: 프론트엔드 도메인 허용
+- **예외 처리**: 보안 정보 노출 방지
+
+### 테스트 환경
+```bash
+# H2 인메모리 데이터베이스로 테스트
+./gradlew bootRun --args='--spring.profiles.active=test'
+
+# API 테스트 (예시)
+curl -X POST http://localhost:8080/api/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"Password123$",...}'
 ```
 
 ### 중요 참고사항
 - QueryDSL Q-클래스는 컴파일 시 생성되며 커밋하지 않음
 - 환경별 설정은 Spring 프로필 사용
-- API 보안을 위해 JWT 인증 구현
+- JWT 비밀키는 환경변수로 주입 (운영 환경)
 - 데이터베이스 스키마 변경은 Flyway 마이그레이션 사용
 - REST API와 GraphQL 엔드포인트 모두 지원
